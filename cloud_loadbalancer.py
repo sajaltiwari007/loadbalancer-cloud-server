@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import requests 
 import os
 import re
@@ -7,6 +8,7 @@ import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for dashboard
 
 # Get server URLs from environment variables
 SERVER_1_URL = os.environ.get("SERVER_1_URL", "http://localhost:8000")
