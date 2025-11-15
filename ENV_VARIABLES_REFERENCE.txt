@@ -1,0 +1,25 @@
+========================================
+ENVIRONMENT VARIABLES FOR RENDER DEPLOYMENT
+========================================
+
+FOR EACH SERVER (server1, server2, server3):
+--------------------------------------------
+SERVER_NAME = server1    (or server2, server3)
+SERVER_CAPACITY = 8      (server1: 8, server2: 15, server3: 16)
+
+
+FOR LOAD BALANCER:
+--------------------------------------------
+SERVER_1_URL = https://loadbalancer-server1.onrender.com
+SERVER_2_URL = https://loadbalancer-server2.onrender.com
+SERVER_3_URL = https://loadbalancer-server3.onrender.com
+LB_ALGO = RoundRobin     (or LeastConnection)
+
+
+NOTES:
+--------------------------------------------
+- Replace the URLs with YOUR actual Render URLs after deployment
+- Don't add trailing slashes to URLs
+- Use HTTPS (not HTTP)
+- Deploy servers FIRST, then load balancer
+- Copy each server's URL before deploying the next one

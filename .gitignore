@@ -1,0 +1,40 @@
+# Virtual environment  
+.venv  
+
+# Git  
+.git  
+*.env  
+
+# Logs  
+logs/  
+*.log  
+CLOUD_DEPLOYMENT_GUIDE.md
+*.md
+.env
+.env.local
+.env.cloud.example
+# Python cache  
+__pycache__/  
+*.pyc  
+*.pyo  
+*.pyd  
+
+# Environment variables  
+.env  
+*.secret  
+
+# Dependencies  
+loadBalancerEnv  
+
+pip-log.txt  
+pip-delete-this-directory.txt  
+
+# Jupyter Notebook  
+.ipynb_checkpoints  
+prometheus-config.yml
+
+commands.txt
+
+# OS-specific  
+.DS_Store  
+Thumbs.db  

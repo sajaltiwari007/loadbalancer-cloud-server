@@ -1,0 +1,125 @@
+========================================
+RENDER DEPLOYMENT - COPY-PASTE REFERENCE
+========================================
+
+Use these exact values when deploying on Render.
+Copy-paste to avoid typos!
+
+========================================
+FOR ALL SERVICES (Common Settings)
+========================================
+
+Runtime: Python 3
+Region: Choose closest to you
+Branch: main
+Root Directory: (leave blank)
+Instance Type: Free
+
+
+========================================
+SERVER 1 DEPLOYMENT
+========================================
+
+Name: loadbalancer-server1
+
+Build Command:
+pip install -r cloud_requirements.txt
+
+Start Command:
+gunicorn cloud_server:app
+
+Environment Variables:
+SERVER_NAME=server1
+SERVER_CAPACITY=8
+
+
+========================================
+SERVER 2 DEPLOYMENT
+========================================
+
+Name: loadbalancer-server2
+
+Build Command:
+pip install -r cloud_requirements.txt
+
+Start Command:
+gunicorn cloud_server:app
+
+Environment Variables:
+SERVER_NAME=server2
+SERVER_CAPACITY=15
+
+
+========================================
+SERVER 3 DEPLOYMENT
+========================================
+
+Name: loadbalancer-server3
+
+Build Command:
+pip install -r cloud_requirements.txt
+
+Start Command:
+gunicorn cloud_server:app
+
+Environment Variables:
+SERVER_NAME=server3
+SERVER_CAPACITY=16
+
+
+========================================
+LOAD BALANCER DEPLOYMENT
+========================================
+
+Name: loadbalancer-main
+
+Build Command:
+pip install -r cloud_requirements.txt
+
+Start Command:
+gunicorn cloud_loadbalancer:app
+
+Environment Variables:
+SERVER_1_URL=https://loadbalancer-server1.onrender.com
+SERVER_2_URL=https://loadbalancer-server2.onrender.com
+SERVER_3_URL=https://loadbalancer-server3.onrender.com
+LB_ALGO=RoundRobin
+
+IMPORTANT: Replace the SERVER URLs with YOUR actual URLs!
+
+
+========================================
+TESTING URLS (After Deployment)
+========================================
+
+Server 1 Test:
+https://loadbalancer-server1.onrender.com/
+
+Server 2 Test:
+https://loadbalancer-server2.onrender.com/
+
+Server 3 Test:
+https://loadbalancer-server3.onrender.com/
+
+Load Balancer Health:
+https://loadbalancer-main.onrender.com/health-check
+
+Load Balancer Test:
+https://loadbalancer-main.onrender.com/heavy-task
+
+Server Metrics:
+https://loadbalancer-main.onrender.com/server-metrics
+
+
+========================================
+NOTES
+========================================
+
+1. Deploy servers FIRST (all 3)
+2. Copy each server's URL
+3. Then deploy load balancer with those URLs
+4. Wait for "Live" status before testing
+5. First request takes 30-60 seconds (cold start)
+6. Subsequent requests are fast
+
+========================================

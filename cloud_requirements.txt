@@ -1,0 +1,7 @@
+Flask
+Werkzeug
+requests
+flask-limiter
+prometheus_client
+prometheus_flask_exporter
+gunicorn
