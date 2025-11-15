@@ -5,3 +5,4 @@ flask-limiter
 prometheus_client
 prometheus_flask_exporter
 gunicorn
+flask-cors
