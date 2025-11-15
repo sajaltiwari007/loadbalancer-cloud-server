@@ -20,17 +20,16 @@ SERVER_NAME = os.environ.get("SERVER_NAME", "server")
 limiter = Limiter(
     get_remote_address, 
     app=app
-)   
+)
 
-limiter.init_app(app)   
 metrics = PrometheusMetrics(app)
  
-# Histogram for Request Response Time
+# Histogram for Request Response Time (buckets in seconds)
 req_response_time = Histogram(
     "http_flask_req_resp_time",
     "Total time taken in request-response by different routes.",
     ["method", "route", "statusCode"],
-    buckets=[1, 5, 10, 15, 20, 40, 80, 100, 200, 500]
+    buckets=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0]
 )
 
 # Counter for Total Requests
@@ -72,7 +71,7 @@ def index():
     })
 
 @app.route("/heavy-task")
-@limiter.limit(lambda: f"{SERVER_CAPACITY} per second")
+@limiter.limit(lambda: f"{SERVER_CAPACITY}/second")
 def heavy_task():
     try:
         result = heavyOperation()
