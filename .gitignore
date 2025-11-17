@@ -18,11 +18,11 @@ __pycache__/
 *.pyc  
 *.pyo  
 *.pyd  
-
+venv
 # Environment variables  
 .env  
 *.secret  
-
+.vscode
 # Dependencies  
 loadBalancerEnv  
 

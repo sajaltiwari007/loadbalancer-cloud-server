@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Load Balancer - Performance Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .control-panel {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .button-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .btn {
+        padding: 15px 25px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        color: white;
+      }
+
+      .btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+      }
+
+      .metric-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .metric-card h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+
+      .metric-value {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #333;
+        margin: 10px 0;
+      }
+
+      .metric-label {
+        color: #666;
+        font-size: 0.9em;
+      }
+
+      .chart-container {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .comparison-table {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+
+      th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .alert {
+        padding: 15px;
+        border-radius: 10px;
+        margin: 15px 0;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🚀 Load Balancer Performance Dashboard</h1>
+        <p>Real-time Comparison: Round Robin vs Least Connection vs RL Agent</p>
+      </div>
+
+      <div class="control-panel">
+        <h2>🎮 Control Panel</h2>
+        <div id="alertContainer"></div>
+        <div class="button-group">
+          <button
+            class="btn btn-primary"
+            onclick="testAlgorithm('rr')"
+            id="btnRR"
+          >
+            Test Round Robin
+          </button>
+          <button
+            class="btn btn-success"
+            onclick="testAlgorithm('lc')"
+            id="btnLC"
+          >
+            Test Least Connection
+          </button>
+          <button
+            class="btn btn-warning"
+            onclick="testAlgorithm('rl')"
+            id="btnRL"
+          >
+            Test RL Agent 🤖
+          </button>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h3>Round Robin</h3>
+          <div class="metric-value" id="rrTime">--</div>
+          <div class="metric-label">Avg Response Time (s)</div>
+          <div class="metric-value" id="rrSuccess">--</div>
+          <div class="metric-label">Success Rate (%)</div>
+        </div>
+
+        <div class="metric-card">
+          <h3>Least Connection</h3>
+          <div class="metric-value" id="lcTime">--</div>
+          <div class="metric-label">Avg Response Time (s)</div>
+          <div class="metric-value" id="lcSuccess">--</div>
+          <div class="metric-label">Success Rate (%)</div>
+        </div>
+
+        <div class="metric-card">
+          <h3>RL Agent 🤖</h3>
+          <div class="metric-value" id="rlTime">--</div>
+          <div class="metric-label">Avg Response Time (s)</div>
+          <div class="metric-value" id="rlSuccess">--</div>
+          <div class="metric-label">Success Rate (%)</div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3>📊 Performance Comparison</h3>
+        <canvas id="comparisonChart"></canvas>
+      </div>
+
+      <div class="comparison-table">
+        <h3>📋 Detailed Results</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Algorithm</th>
+              <th>Avg Time (s)</th>
+              <th>Success Rate</th>
+              <th>Total Requests</th>
+              <th>Failures</th>
+              <th>Adapts to Load</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td>Round Robin</td>
+              <td id="rrTableTime">--</td>
+              <td id="rrTableSuccess">--</td>
+              <td id="rrTableTotal">--</td>
+              <td id="rrTableFail">--</td>
+              <td>❌ No</td>
+            </tr>
+            <tr>
+              <td>Least Connection</td>
+              <td id="lcTableTime">--</td>
+              <td id="lcTableSuccess">--</td>
+              <td id="lcTableTotal">--</td>
+              <td id="lcTableFail">--</td>
+              <td>⚠️ Partially</td>
+            </tr>
+            <tr>
+              <td>RL Agent 🤖</td>
+              <td id="rlTableTime">--</td>
+              <td id="rlTableSuccess">--</td>
+              <td id="rlTableTotal">--</td>
+              <td id="rlTableFail">--</td>
+              <td>✅ Yes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      const CLOUD_URL = "https://loadbalancer-main-server.onrender.com";
+      const LOCAL_URL = "http://localhost:8005";
+
+      let chart;
+
+      function initChart() {
+        const ctx = document.getElementById("comparisonChart").getContext("2d");
+        chart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: ["Round Robin", "Least Connection", "RL Agent"],
+            datasets: [
+              {
+                label: "Avg Response Time (s)",
+                data: [0, 0, 0],
+                backgroundColor: [
+                  "rgba(102, 126, 234, 0.8)",
+                  "rgba(17, 153, 142, 0.8)",
+                  "rgba(250, 112, 154, 0.8)",
+                ],
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: { display: true, text: "Seconds" },
+              },
+            },
+          },
+        });
+      }
+
+      function showAlert(msg, type = "success") {
+        const container = document.getElementById("alertContainer");
+        container.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+        setTimeout(() => (container.innerHTML = ""), 5000);
+      }
+
+      async function testAlgorithm(algo) {
+        const url = algo === "rl" ? LOCAL_URL : CLOUD_URL;
+        const name =
+          algo === "rr"
+            ? "Round Robin"
+            : algo === "lc"
+            ? "Least Connection"
+            : "RL Agent";
+
+        console.log("Testing:", name, "URL:", url);
+        showAlert(`🔄 Testing ${name}... Please wait 30-60 seconds`);
+        disableButtons(true);
+
+        const startTime = Date.now();
+        try {
+          console.log("Fetching from:", `${url}/heavy-task`);
+          const response = await fetch(`${url}/heavy-task`);
+          console.log("Response status:", response.status);
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          console.log("Received data:", data);
+
+          const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+          console.log("Total duration:", duration);
+
+          updateUI(algo, data, duration);
+          showAlert(`✅ ${name} completed in ${duration}s!`);
+        } catch (error) {
+          console.error("Test failed:", error);
+          showAlert(`❌ Error: ${error.message}`, "error");
+        } finally {
+          disableButtons(false);
+        }
+      }
+
+      function updateUI(algo, data, totalTime) {
+        console.log(
+          "Updating UI for:",
+          algo,
+          "Data:",
+          data,
+          "Time:",
+          totalTime
+        );
+
+        const successRate = (
+          (data.successes / data.total_requests) *
+          100
+        ).toFixed(1);
+
+        let avgTime;
+
+        if (algo === "rl") {
+          // RL uses simulated time (0.1-0.3s range)
+          avgTime = (data.simulated_avg_response_time || 0).toFixed(3);
+        } else {
+          // RR & LC use actual cloud response time calculated from frontend timing
+          avgTime = (parseFloat(totalTime) / data.total_requests).toFixed(3);
+        }
+
+        const prefix = algo === "rr" ? "rr" : algo === "lc" ? "lc" : "rl";
+
+        document.getElementById(`${prefix}Time`).textContent = avgTime;
+        document.getElementById(`${prefix}Success`).textContent =
+          successRate + "%";
+
+        document.getElementById(`${prefix}TableTime`).textContent =
+          avgTime + "s";
+        document.getElementById(`${prefix}TableSuccess`).textContent =
+          successRate + "%";
+        document.getElementById(`${prefix}TableTotal`).textContent =
+          data.total_requests;
+        document.getElementById(`${prefix}TableFail`).textContent =
+          data.failures;
+
+        const index = algo === "rr" ? 0 : algo === "lc" ? 1 : 2;
+
+        if (chart && chart.data && chart.data.datasets[0]) {
+          chart.data.datasets[0].data[index] = parseFloat(avgTime);
+          chart.update("active");
+        }
+      }
+
+      function disableButtons(disabled) {
+        document.getElementById("btnRR").disabled = disabled;
+        document.getElementById("btnLC").disabled = disabled;
+        document.getElementById("btnRL").disabled = disabled;
+      }
+
+      window.onload = initChart;
+    </script>
+  </body>
+</html>

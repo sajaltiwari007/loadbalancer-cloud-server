@@ -1,7 +1,9 @@
 flask
 requests
 flask-limiter
+flask-cors
 prometheus_client
 prometheus_flask_exporter
 tensorflow
 numpy
+python-dotenv

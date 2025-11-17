@@ -1,0 +1,10 @@
+flask
+flask-cors
+requests
+python-dotenv
+numpy
+
+# TensorFlow ecosystem (compatible with TF-Agents)
+tensorflow==2.13.0
+tensorflow-probability==0.19.0
+tf-agents==0.16.0
