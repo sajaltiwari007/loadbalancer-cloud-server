@@ -168,12 +168,12 @@
   <body>
     <div class="container">
       <div class="header">
-        <h1>🚀 Load Balancer Performance Dashboard</h1>
+        <h1>Load Balancer Performance Dashboard</h1>
         <p>Real-time Comparison: Round Robin vs Least Connection vs RL Agent</p>
       </div>
 
       <div class="control-panel">
-        <h2>🎮 Control Panel</h2>
+        <h2>Control Panel</h2>
         <div id="alertContainer"></div>
         <div class="button-group">
           <button
@@ -195,7 +195,7 @@
             onclick="testAlgorithm('rl')"
             id="btnRL"
           >
-            Test RL Agent 🤖
+            Test RL Agent 
           </button>
         </div>
       </div>
@@ -218,7 +218,7 @@
         </div>
 
         <div class="metric-card">
-          <h3>RL Agent 🤖</h3>
+          <h3>RL Agent </h3>
           <div class="metric-value" id="rlTime">--</div>
           <div class="metric-label">Avg Response Time (s)</div>
           <div class="metric-value" id="rlSuccess">--</div>
@@ -232,7 +232,7 @@
       </div>
 
       <div class="comparison-table">
-        <h3>📋 Detailed Results</h3>
+        <h3>Detailed Results</h3>
         <table>
           <thead>
             <tr>
@@ -251,7 +251,7 @@
               <td id="rrTableSuccess">--</td>
               <td id="rrTableTotal">--</td>
               <td id="rrTableFail">--</td>
-              <td>❌ No</td>
+              <td>No</td>
             </tr>
             <tr>
               <td>Least Connection</td>
@@ -259,15 +259,15 @@
               <td id="lcTableSuccess">--</td>
               <td id="lcTableTotal">--</td>
               <td id="lcTableFail">--</td>
-              <td>⚠️ Partially</td>
+              <td>Partially</td>
             </tr>
             <tr>
-              <td>RL Agent 🤖</td>
+              <td>RL Agent</td>
               <td id="rlTableTime">--</td>
               <td id="rlTableSuccess">--</td>
               <td id="rlTableTotal">--</td>
               <td id="rlTableFail">--</td>
-              <td>✅ Yes</td>
+              <td>Yes</td>
             </tr>
           </tbody>
         </table>
@@ -327,7 +327,7 @@
             : "RL Agent";
 
         console.log("Testing:", name, "URL:", url);
-        showAlert(`🔄 Testing ${name}... Please wait 30-60 seconds`);
+        showAlert(`Testing ${name}... Please wait 30-60 seconds`);
         disableButtons(true);
 
         const startTime = Date.now();
@@ -347,10 +347,10 @@
           console.log("Total duration:", duration);
 
           updateUI(algo, data, duration);
-          showAlert(`✅ ${name} completed in ${duration}s!`);
+          showAlert(`${name} completed in ${duration}s!`);
         } catch (error) {
           console.error("Test failed:", error);
-          showAlert(`❌ Error: ${error.message}`, "error");
+          showAlert(`Error: ${error.message}`, "error");
         } finally {
           disableButtons(false);
         }
@@ -405,9 +405,8 @@
       }
 
       function disableButtons(disabled) {
-        document.getElementById("btnRR").disabled = disabled;
-        document.getElementById("btnLC").disabled = disabled;
-        document.getElementById("btnRL").disabled = disabled;
+        if (btnRR) document.getElementById("btnRR").disabled = disabled;
+        if (btnRL) document.getElementById("btnRL").disabled = disabled;
       }
 
       window.onload = initChart;
